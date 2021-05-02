@@ -1,3 +1,7 @@
+# DANGER  This project intends to use Hugo as frontend for a full stack online auction system.  It is work in progress.  DO NOT USE
+
+
+
 # Meghna Hugo Theme
 
 Meghna Hugo  is a one page professional Hugo website template and crafted with all the necessary elements and features. Apart from the exclusive appearance, the main features of Meghna are video embedding option in the homepage, about, portfolio, service, skills, works, team, testimonial, pricing, and blog sections
