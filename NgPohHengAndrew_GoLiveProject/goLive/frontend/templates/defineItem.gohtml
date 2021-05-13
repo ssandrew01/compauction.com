@@ -1,0 +1,47 @@
+{{define "defineItem"}}
+
+	{{if .}}
+		<div class="div_wrapper">
+			{{range .}}
+			<div class="div_item">
+				<div class="div_item_img">
+					<img src="{{.ItemImage}}" width="96" height="96">
+				</div>
+				<div class="div_item_info">
+					<div>ID: {{.ItemID}}</div>
+					<div class="div_item_info_header">
+						<div class="div_item_info_name">{{.ItemName}}</div>
+						<div class="div_item_info_price">SGD {{.ItemBidPrice}}</div>
+						<div class="div_item_info_exp">Closing Date : {{.ItemClosingDate}}</div>
+					</div>
+					<div>{{.ItemDesc}}</div>
+
+					<button class="button_cancel_bid"
+						onclick="cancelBid(event);"
+						data-id="{{.ItemID}}"
+						data-name="{{.ItemName}}">Cancel Bid</button>
+				</div>
+			</div>
+			{{end}}
+		</div>
+
+		<div id="div_modal_bid" class="modal">
+			<form id="bidForm" method="POST" action="profile"
+				class="modal-content" autocomplete="off">
+				<input type="hidden" name="CSRF" value="CSRF-TOKEN">
+
+				<!-- data to be queried when bid is cancelled -->
+				<input type="hidden" id="itemid" name="itemid">
+
+				<div>Do you want to cancel bid for <span id="itemname"></span> ?</div>
+				<div class="container">
+					<div style="display: inline-flex;">
+						<button class="button_submit" onclick="submitBid(event);">Yes</button>
+						<div class="div_cancel" onclick="hideModal('div_modal_bid');">No</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	{{end}}
+
+{{end}}

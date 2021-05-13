@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{{template "defineHeader"}}
+		<title>Edit Item {{.Item.ItemName}}</title>
+		<script>
+			function _id(id) { return document.getElementById(id); }
+
+			function updateForm() {
+				updateDatePicker();
+				setImagePreview();
+				updateTextAreaValue();
+			}
+
+			function prefixZero(n) {
+				if (n < 10)
+					return "0" + n;
+				return n;
+			}
+
+			function updateDatePicker() {
+				var datepicker = _id("itemclosingdate");
+				if (!datepicker) // check null
+					return;
+
+				var now = new Date(Date.now());
+
+				var y = now.getYear()+1900;
+				var m = prefixZero(now.getMonth()+1);
+				var d = prefixZero(now.getDate());
+
+				// set minimum date
+				var min = y + "-" + m + "-" + d;
+				datepicker.setAttribute("min", min);
+
+				// set maximum date
+				/*y += 1; // within 1 year from now
+				var max = y + "-" + m + "-" + d;
+				datepicker.setAttribute("max", max);*/
+
+				console.log(min/*, max*/);
+			}
+
+			function setImagePreview() {
+				var input = _id("itemuploadimage");
+				input.addEventListener("change", showImagePreview)
+			}
+
+			function showImagePreview(e) {
+				var input = _id("itemuploadimage");
+				var preview = _id("image_preview");
+				var imgsize = _id("uploadimagesize");
+
+				while (preview.firstChild) {
+					preview.removeChild(preview.firstChild);
+				}
+
+				var files = input.files;
+				if (files.length != 0) {
+					for (var file of files) {
+						var div = document.createElement("div");
+						if (validFileType(file)) {
+							imgsize.textContent = getFileSize(file.size);
+							imgsize.style.display = "block";
+
+							var image = document.createElement("img");
+							image.src = URL.createObjectURL(file);
+							image.width = "128";
+							image.height = "128";
+							div.appendChild(image);
+						}
+						else {
+							div.textContent = "Invalid file type. Reupload image.";
+						}
+						preview.appendChild(div);
+					}
+				}
+			}
+
+			const fileTypes = [
+				"image/bmp",
+				"image/gif",
+				"image/jpeg",
+				"image/jpg",
+				"image/png",
+				"image/tiff",
+				"image/webp"
+			];
+
+			function validFileType(file) {
+				return fileTypes.includes(file.type);
+			}
+
+			function getFileSize(n) {
+				if (n >= 1024 && n < 1048576) {
+					return (n/1024).toFixed(1) + " KB";
+				}
+				else if (n >= 1048576) {
+					return (n/1048576).toFixed(1) + " MB";
+				}
+				return n + " bytes";
+			}
+
+			function updateTextAreaValue() {
+				var input = _id("itemeditdesc");
+				if (!input)
+					return;
+				_id("itemdesc").value = input.value;
+			}
+		</script>
+	</head>
+	<body onload="updateForm()" id="template_edit">
+		<div class="div_content_wrapper" style="z-index:1;">
+			{{if .User.UserID}}
+				<div class="div_header">
+					{{template "defineHomeProfileLogout"}}
+
+					<div class="div_welcome">
+						Welcome {{.User.FirstName}} {{.User.LastName}}
+					</div>
+				</div>
+
+				<div>
+					<h3>Edit Item</h3>
+				</div>
+
+				<div class="div_wrapper">
+					<form id="editForm" method="POST" autocomplete="off" enctype="multipart/form-data">
+						<div class="div_item">
+							<table id="table_edit_form">
+								<tbody>
+									<tr>
+										<td><label for="itemname">Item Name:</label></td>
+										<td>
+											<input type="text" id="itemname" name="itemname"
+												value="{{.Item.ItemName}}" maxlength="50"
+												placeholder="Item name..." required>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="itemdesc">Item Description:</label></td>
+										<td>
+											<input type="hidden" id="itemeditdesc" value="{{.Item.ItemDesc}}">
+											<textarea id="itemdesc" name="itemdesc" maxlength="100"
+												placeholder="Item description..." rows="5" cols="100" required></textarea>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="itemstartbid">Starting Bid Price:</label></td>
+										<td>
+											<input type="number" id="itemstartbid" name="itemstartbid"
+												value="{{.Item.ItemBidPrice}}" maxlength="50"
+												min="1" required> SGD
+										</td>
+									</tr>
+									<tr>
+										<td><label for="itemstepbid">Set Increment Bid Price:</label></td>
+										<td>
+											<input type="number" id="itemstepbid" name="itemstepbid"
+												value="{{.Item.ItemBidPriceStep}}" maxlength="50"
+												min="1" required> SGD
+										</td>
+									</tr>
+									<tr>
+										<td><label for="itemclosingdate">Closing Date:</label></td>
+										<td>
+											<input type="date" id="itemclosingdate" name="itemclosingdate"
+												value="{{.Item.ItemClosingDate}}"
+												required>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="itemuploadimage">Upload Image:</label></td>
+										<td>
+											<div class="upload_wrapper">
+												<!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept -->
+												<input type="file" id="itemuploadimage" name="itemuploadimage"
+													accept="image/*" required>
+												<div id="uploadimagesize"></div>
+											</div>
+											<div id="image_preview">
+												<img src="{{.Item.ItemImage}}" width="128" height="128">
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="div_edit_wrapper">
+							<!-- data to be queried when editing placement -->
+							<input type="hidden" name="itemeditidold" value="{{.Item.ItemID}}">
+
+							<button type="submit" class="button_submit">Edit Item</button>
+							<a href="/profile" class="a_profile_cancel">Cancel</a>
+						</div>
+					</form>
+				</div>
+
+			{{else}}
+				<div><h3><a href="/">Back</a></h3></div>
+				<div><h2>Unauthorized Access</h2></div>
+				<div style="color:red;padding-top:20px;">You do have permission to view this page</div>
+			{{end}}
+
+		</div>
+	</body>
+</html>

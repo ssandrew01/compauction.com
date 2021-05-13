@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{{template "defineHeader"}}
+		<title>Bid {{.Item.ItemName}}</title>
+		<script>
+			function _id(id) { return document.getElementById(id); }
+
+			function confirmBid(e) {
+				var modal = _id("div_modal_bid");
+				if (!modal) // check null
+					return;
+				modal.setAttribute("style", "display:block;z-index:10;");
+			}
+
+			function hideModal(id) {
+				var modal = _id(id);
+				if (!modal) // check null
+					return;
+				modal.setAttribute("style", "display:none;");
+			}
+
+			function submitBid(e) {
+				e.preventDefault();
+
+				// update new bid price
+				var bidprice = _id("bidprice").value;
+				var newbidprice = document.querySelector("input[name='newbidprice']");
+				newbidprice.setAttribute("value", bidprice);
+				console.log(bidprice);
+
+				// submit form
+				var form = document.querySelector("#bidForm");
+				if (form) // check null
+					form.submit();
+
+				// hide modal
+				hideModal("div_modal_bid");
+			}
+
+			// when user click outside the modal, close it
+			window.onclick = function(event) {
+				var modal = _id("div_modal_bid");
+				if (event.target == modal)
+					modal.style.display = "none";
+			}
+		</script>
+	</head>
+	<body id="template_bid">
+		<div class="div_content_wrapper">
+			{{if .User.UserID}}
+			<div class="div_header">
+				{{template "defineHomeProfileLogout"}}
+
+				<div class="div_welcome">
+					Welcome {{.User.FirstName}} {{.User.LastName}}
+				</div>
+			</div>
+			{{end}}
+
+			<div>
+				<h3>Bid {{.Item.ItemName}}</h3>
+			</div>
+
+			<div class="div_item">
+				<div style="margin-left: 20px;">
+					<img src="{{.Item.ItemImage}}" width="96" height="96">
+				</div>
+				<div style="display: inline-grid; margin-left: 50px;">
+					<div style="display: inline-flex;">
+						<div>
+							<div>Item ID:</div>
+							<div>Item Name:</div>
+							<div>Item Details:</div>
+							<div>Item Bid Price:</div>
+							<div>Item Closing Date:</div>
+							{{if .User.UserID}}
+								{{if eq .ErrorMessage ""}}
+							<div style="margin-top: 14px;">
+								<label for="bidprice">Adjust Bid Price:</label>
+							</div>
+								{{end}}
+							{{end}}
+						</div>
+						<div style="margin-left: 20px;">
+							<div>{{.Item.ItemID}}</div>
+							<div>{{.Item.ItemName}}</div>
+							<div>{{.Item.ItemDesc}}</div>
+							<div>{{.Item.ItemBidPrice}} SGD</div>
+							<div>{{.Item.ItemClosingDate}}</div>
+							{{if .User.UserID}}
+								{{if eq .ErrorMessage ""}}
+							<div>
+								<input type="number" id="bidprice" name="bidprice"
+									min="{{.Item.ItemBidPriceStep}}" maxlength="50"
+									step="{{.Item.ItemBidPriceStep}}"
+									value="{{.Item.ItemBidPriceStep}}" required> SGD
+							</div>
+								{{end}}
+							{{end}}
+						</div>
+					</div>
+
+					{{if .User.UserID}}
+						<div class="div_bid_wrapper">
+							{{if .ErrorMessage}}
+								<div class="div_error">{{.ErrorMessage}}</div>
+							{{else}}
+								<button class="button_bid" onclick="confirmBid(event);">Bid Now</button>
+							{{end}}
+								<a href="/" class="a_cancel">Cancel</a>
+						</div>
+					{{else}}
+						<a href="/login" class="button_bid">Login or Signup to Bid</a>
+					{{end}}
+				</div>
+			</div>
+
+			{{if .User.UserID}}
+				<div id="div_modal_bid" class="modal">
+					<!-- redirect to profile page -->
+					<form id="bidForm" action="profile" method="POST"
+						class="modal-content" autocomplete="off">
+						<input type="hidden" name="CSRF" value="CSRF-TOKEN">
+
+						<!-- data to be queried when bid is confirmed -->
+						<input type="hidden" name="itemid" value="{{.Item.ItemID}}">
+						<input type="hidden" name="newbidprice">
+
+						<div class="container">
+							<div>Do you want to place bid for "{{.Item.ItemName}}" ?</div>
+							<div style="display: inline-flex;">
+								<button class="button_submit" onclick="submitBid(event);">Yes</button>
+								<div class="div_cancel" onclick="hideModal('div_modal_bid');">No</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			{{end}}
+
+		</div>
+	</body>
+</html>

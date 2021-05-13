@@ -1,0 +1,66 @@
+{{define "defineItemSell"}}
+
+	{{if .}}
+		<div class="div_wrapper">
+			{{range .}}
+			<div class="div_item">
+				<div class="div_item_img">
+					<img src="{{.ItemImage}}" width="96" height="96">
+				</div>
+				<div class="div_item_info">
+					<div>ID: {{.ItemID}}</div>
+					<div class="div_item_info_header">
+						<div class="div_item_info_name">{{.ItemName}}</div>
+						<div class="div_item_info_price">SGD {{.ItemBidPrice}}</div>
+						<div class="div_item_info_exp">Closing Date : {{.ItemClosingDate}}</div>
+					</div>
+					<div>{{.ItemDesc}}</div>
+
+					{{if eq .ItemBidStatus 1}}
+						<div class="div_bid_confirmed">Bid Confirmed</div>
+
+					{{else}}
+						<div style="display: inline-flex;">
+							<button class="button_delete_bid"
+								onclick="deleteBid(event);"
+								data-id="{{.ItemID}}"
+								data-name="{{.ItemName}}">Delete Bid Placement</button>
+
+							<form id="editBidForm" method="POST" action="itemEdit"
+								autocomplete="off">
+								<input type="hidden" name="CSRF" value="CSRF-TOKEN">
+
+								<!-- data to be queried when editing placement -->
+								<input type="hidden" id="itemeditid"
+									name="itemeditid" value="{{.ItemID}}">
+
+								<button class="button_edit_bid"
+									onclick="submitEditBid(event);">Edit Bid Placement</button>
+							</form>
+						</div>
+					{{end}}
+				</div>
+			</div>
+			{{end}}
+		</div>
+
+		<div id="div_modal_bid_delete" class="modal">
+			<form id="deleteBidForm" method="POST" action="profile"
+				class="modal-content" autocomplete="off">
+				<input type="hidden" name="CSRF" value="CSRF-TOKEN">
+
+				<!-- data to be queried when deleting placement -->
+				<input type="hidden" id="itemdeleteid" name="itemdeleteid">
+
+				<div>Do you want to delete bid placement for <span id="itemdeletename"></span> ?</div>
+				<div class="container">
+					<div style="display: inline-flex;">
+						<button class="button_submit" onclick="submitDeleteBid(event);">Yes</button>
+						<div class="div_cancel" onclick="hideModal('div_modal_bid_delete');">No</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	{{end}}
+
+{{end}}

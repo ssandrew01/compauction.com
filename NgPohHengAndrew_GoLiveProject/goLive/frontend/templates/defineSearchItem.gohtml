@@ -1,0 +1,52 @@
+{{define "defineSearchItem"}}
+
+	{{$Results := .Results}}
+	{{$Items := .Items}}
+	{{$User := .User}}
+
+	{{if .}}
+		<div class="div_results">Showing {{$Results}} results</div>
+
+		<div class="div_wrapper">
+			{{range $Items}}
+			<div class="div_item">
+				<div class="div_item_img">
+					<img src="{{.ItemImage}}" width="96" height="96">
+				</div>
+				<div class="div_item_info">
+					<div class="div_item_info_header">
+						<div class="div_item_info_name">{{.ItemName}}</div>
+						<div class="div_item_info_price">SGD {{.ItemBidPrice}}</div>
+						<div class="div_item_info_exp">Closing Date : {{.ItemClosingDate}}</div>
+					</div>
+					<div>{{.ItemDesc}}</div>
+
+					{{if eq .ItemBidStatus 1}}
+						<div class="div_bid">Bid Confirmed</div>
+
+					{{else}}
+						{{if $User.UserID}}
+							<form method="POST" autocomplete="off">
+								<input type="hidden" name="CSRF" value="CSRF-TOKEN">
+								<input type="hidden" name="itemid" value="{{.ItemID}}">
+								<button class="button_bid" onclick="confirmBid(event);"
+									value="{{.ItemID}}">Bid Now</button>
+							</form>
+						{{else}}
+							<div style="padding-top: 8px;">
+								<form method="POST" autocomplete="off" action="login">
+									<input type="hidden" name="CSRF" value="CSRF-TOKEN">
+									<input type="hidden" name="itemidlogin" value="{{.ItemID}}">
+									<a href="/login" class="signup" onclick="login(event);"
+										value="{{.ItemID}}">Login or Signup to Bid</a>
+								</form>
+							</div>
+						{{end}}
+					{{end}}
+				</div>
+			</div>
+			{{end}}
+		</div>
+	{{end}}
+
+{{end}}

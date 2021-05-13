@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{{template "defineHeader"}}
+		<title>Signup - Create New Account</title>
+		<script>
+			function login(e) {
+				e.preventDefault();
+
+				var a = e.currentTarget;
+				if (!a)
+					return;
+				console.log("login", a.getAttribute("value"));
+
+				// submit form
+				var form = a.parentNode.parentNode;
+				if (form.nodeName.toLowerCase() == "form")
+					form.submit();
+			}
+		</script>
+	</head>
+	<body id="template_signup">
+		<div class="div_content_wrapper">
+			<div class="div_header">
+				<a href="/" class="a_home">Home</a>
+			</div>
+		</div>
+
+		<div class="signup_page">
+			<div>
+				<h2>Sign Up - Create New Account</h2>
+			</div>
+
+			{{if .ErrorMessage}}
+				<div style="text-align:center;display:inline-block;">
+					<div class="error_message">{{.ErrorMessage}}</div>
+				</div>
+			{{end}}
+
+			<form method="POST" autocomplete="off">
+				<input type="hidden" name="CSRF" value="CSRF-TOKEN">
+				<input type="hidden" name="itemidsignup" value="{{.Item.ItemID}}">
+				<div>
+					<div class="div_input">
+						<input type="text" id="firstname" name="firstname" placeholder="First Name" required
+							maxlength="{{.MaxLength}}">
+					</div>
+					<div class="div_input">
+						<input type="text" id="lastname" name="lastname" placeholder="Last Name" required
+							maxlength="{{.MaxLength}}">
+					</div>
+					<div class="div_input">
+						<input type="text" id="username" name="username" placeholder="Username" required
+							maxlength="{{.MaxLength}}">
+					</div>
+					<div class="div_input">
+						<input type="password" id="password" name="password" placeholder="Password" required>
+					</div>
+				</div>
+				<button type="submit" class="button_signup">Sign Up</button>
+			</form>
+
+			<form method="POST" autocomplete="off" action="login">
+				<input type="hidden" name="CSRF" value="CSRF-TOKEN">
+				<input type="hidden" name="itemidlogin" value="{{.Item.ItemID}}">
+				<h3>Have an account?<a href="/login" class="signup"
+					onclick="login(event);" value="{{.Item.ItemID}}">Log In</a></h3>
+			</form>
+		</div>
+
+	</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{{template "defineHeader"}}
+		<title>User Profile</title>
+		<script>
+			function _id(id) { return document.getElementById(id); }
+
+			function cancelBid(e) {
+				e.preventDefault();
+
+				var modal = _id("div_modal_bid");
+				if (!modal) // check null
+					return;
+				modal.setAttribute("style", "display:block;z-index:10;");
+
+				var button = e.currentTarget;
+				var ds = button.dataset;
+				console.log(ds);
+
+				modal.querySelector("#itemid")
+					.setAttribute("value", ds.id);
+				modal.querySelector("#itemname")
+					.textContent = "\""+ ds.name +"\"";
+			}
+
+			function hideModal(id) {
+				var modal = _id(id);
+				if (!modal) // check null
+					return;
+				modal.setAttribute("style", "display:none;");
+			}
+
+			function submitBid(e) {
+				e.preventDefault();
+
+				// submit form
+				var form = document.querySelector("#bidForm");
+				if (form) // check null
+					form.submit();
+
+				// hide modal
+				hideModal("div_modal_bid");
+			}
+
+			// when user click outside the modal, close it
+			window.onclick = function(event) {
+				var modal = _id("div_modal_bid");
+				if (event.target == modal)
+					modal.style.display = "none";
+			}
+
+			function deleteBid(e) {
+				e.preventDefault();
+
+				var modal = _id("div_modal_bid_delete");
+				if (!modal) // check null
+					return;
+				modal.setAttribute("style", "display:block;z-index:10;");
+
+				var button = e.currentTarget;
+				var ds = button.dataset;
+				console.log(ds);
+
+				modal.querySelector("#itemdeleteid")
+					.setAttribute("value", ds.id);
+				modal.querySelector("#itemdeletename")
+					.textContent = "\""+ ds.name +"\"";
+			}
+
+			function submitDeleteBid(e) {
+				e.preventDefault();
+
+				// submit form
+				var form = document.querySelector("#deleteBidForm");
+				if (form) // check null
+					form.submit();
+
+				// hide modal
+				hideModal("div_modal_bid_delete");
+			}
+
+			function submitEditBid(e) {
+				e.preventDefault();
+
+				// submit form
+				var form = document.querySelector("#editBidForm");
+				if (form) // check null
+					form.submit();
+			}
+		</script>
+	</head>
+	<body id="template_profile">
+		<div class="div_content_wrapper">
+			{{if .User.UserID}}
+				<div class="div_header">
+					{{template "defineHomeLogout"}}
+
+					<div class="div_welcome">
+						Welcome {{.User.FirstName}} {{.User.LastName}}
+					</div>
+				</div>
+
+				<div style="margin-top: 20px;">
+					<h3><a href="/">Bid Item</a></h3>
+					<h3><a href="/itemSell">Sell Item</a></h3>
+				</div>
+
+				{{if .User.ItemsBid}}
+					<div class="items_bid items_wrapper">
+						<div class="items_header">Items bid</div>
+						{{template "defineItem" .User.ItemsBid}}
+					</div>
+				{{end}}
+
+				{{if .User.ItemsSell}}
+					<div class="items_sell items_wrapper">
+						<div class="items_header">Items currently selling</div>
+						{{template "defineItemSell" .User.ItemsSell}}
+					</div>
+				{{end}}
+
+				{{if .User.ItemsAuction}}
+					<div class="items_auction items_wrapper">
+						<div class="items_header">Completed Auction</div>
+						{{template "defineItem" .User.ItemsAuction}}
+					</div>
+				{{end}}
+
+			{{end}}
+		</div>
+	</body>
+</html>

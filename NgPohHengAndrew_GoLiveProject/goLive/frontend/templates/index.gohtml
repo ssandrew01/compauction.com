@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{{template "defineHeader"}}
+		<title>Computer Parts Auction</title>
+		<script>
+			function _id(id) { return document.getElementById(id); }
+
+			function updateForm() {
+				focusSearchForm();
+			}
+
+			function focusSearchForm() {
+				var search = _id("search");
+				if (!search) // check null
+					return;
+
+				// focus HTML input
+				if (search.value.length == 0)
+					search.focus();
+
+				else // blur HTML input if has text
+					search.blur();
+			}
+
+			function confirmBid(e) {
+				e.preventDefault();
+
+				var button = e.currentTarget;
+				if (!button)
+					return;
+				console.log(button.value);
+
+				// submit form
+				var form = button.parentNode;
+				if (form.nodeName.toLowerCase() == "form")
+					form.submit();
+			}
+
+			function login(e) {
+				e.preventDefault();
+
+				var a = e.currentTarget;
+				if (!a)
+					return;
+				console.log("login", a.getAttribute("value"));
+
+				// submit form
+				var form = a.parentNode;
+				if (form.nodeName.toLowerCase() == "form")
+					form.submit();
+			}
+		</script>
+	</head>
+	<body onload="updateForm()" id="template_index">
+		<div class="div_content_wrapper">
+			{{if .User.UserID}}
+			<div class="div_header">
+				{{template "defineProfileLogout"}}
+
+				<div class="div_welcome">
+					Welcome {{.User.FirstName}} {{.User.LastName}}
+				</div>
+			</div>
+			{{else}}
+			<div class="div_header">
+				{{template "defineLoginSignup"}}
+			</div>
+			{{end}}
+
+			<div>
+				<h1>Computer Parts Auction</h1>
+			</div>
+
+			<form id="searchForm" method="POST" autocomplete="off">
+				<input type="hidden" name="CSRF" value="CSRF-TOKEN">
+				<div id="div_search">
+					<input type="text" id="search" name="search"
+						class="input_search" placeholder="Search..."
+						value="{{.QueryString}}">
+					<button type="submit" class="button_search">Search</button>
+				</div>
+			</form>
+
+			{{template "defineSearchItem" .}}
+		</div>
+	</body>
+</html>
